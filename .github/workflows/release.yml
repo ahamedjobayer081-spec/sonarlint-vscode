@@ -34,23 +34,28 @@ jobs:
     env:
       ARTIFACTORY_URL: https://repox.jfrog.io/artifactory
     steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+        with:
+          egress-policy: audit
+
       - name: Checkout custom actions
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           clean: false
       - name: Use Node 20
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: '20'
       - name: Get vault secrets
         id: secrets
-        uses: SonarSource/vault-action-wrapper@3.0.1
+        uses: SonarSource/vault-action-wrapper@3996073b47b49ac5c58c750d27ab4edf469401c8 # 3.0.1
         with:
           secrets: |
             development/artifactory/token/{REPO_OWNER_NAME_DASH}-private-reader access_token | ARTIFACTORY_ACCESS_TOKEN;
             development/kv/data/visualstudio VSCE_TOKEN | VISUALSTUDIO_PAT;
       - name: Cache NPM dependencies
-        uses: SonarSource/gh-action_cache@v1
+        uses: SonarSource/gh-action_cache@957cb1f6f70956976b834546bf09839080b5bb00 # v1.2.3
         with:
           path: ~/.npm
           key: npm-${{ runner.os }}-vsce-publish-${{ hashFiles('.github/actions/vsce-publish/package-lock.json') }}
@@ -124,21 +129,26 @@ jobs:
     env:
       ARTIFACTORY_URL: https://repox.jfrog.io/artifactory
     steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+        with:
+          egress-policy: audit
+
       - name: Checkout custom actions
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: Use Node 20
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: '20'
       - name: Get vault secrets
         id: secrets
-        uses: SonarSource/vault-action-wrapper@3.0.1
+        uses: SonarSource/vault-action-wrapper@3996073b47b49ac5c58c750d27ab4edf469401c8 # 3.0.1
         with:
           secrets: |
             development/artifactory/token/{REPO_OWNER_NAME_DASH}-private-reader access_token | ARTIFACTORY_ACCESS_TOKEN;
             development/team/sonarlint/kv/data/openvsx token | OPENVSX_TOKEN;
       - name: Cache NPM dependencies
-        uses: SonarSource/gh-action_cache@v1
+        uses: SonarSource/gh-action_cache@957cb1f6f70956976b834546bf09839080b5bb00 # v1.2.3
         with:
           path: |
             ~/.npm

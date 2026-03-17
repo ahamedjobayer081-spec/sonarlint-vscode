@@ -14,7 +14,12 @@ jobs:
     runs-on: github-ubuntu-latest-s
     name: Scan on shadow platforms
     steps:
-      - uses: actions/checkout@v5
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
 
       - uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2.4.4
         with:
@@ -22,7 +27,7 @@ jobs:
 
       - name: Fetch vault secrets
         id: secrets
-        uses: SonarSource/vault-action-wrapper@v3
+        uses: SonarSource/vault-action-wrapper@3d5c87cb535e4a2c7a09adcbcfdefa751854dee3 # v3
         with:
           secrets: |
             development/kv/data/repox url | ARTIFACTORY_URL;
@@ -35,10 +40,10 @@ jobs:
             development/kv/data/iris sqc-eu | SONAR_IRIS_SQC_EU_TOKEN;
             development/kv/data/iris sqc-us | SONAR_IRIS_SQC_US_TOKEN;
 
-      - uses: SonarSource/ci-github-actions/get-build-number@v1
+      - uses: SonarSource/ci-github-actions/get-build-number@c15f3733837c5ebd0f04a676feb1e18fae147cd5 # v1
 
       - name: Cache NPM dependencies
-        uses: SonarSource/gh-action_cache@v1
+        uses: SonarSource/gh-action_cache@957cb1f6f70956976b834546bf09839080b5bb00 # v1.2.3
         with:
           path: |
             ~/.npm
@@ -47,7 +52,7 @@ jobs:
           restore-keys: npm-${{ runner.os }}
 
       - name: Cache JAR dependencies
-        uses: SonarSource/gh-action_cache@v1
+        uses: SonarSource/gh-action_cache@957cb1f6f70956976b834546bf09839080b5bb00 # v1.2.3
         with:
           path: |
             server/
@@ -108,8 +113,13 @@ jobs:
     needs: scan
     if: ${{ !cancelled() }}
     steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+        with:
+          egress-policy: audit
+
       - name: Run IRIS Analysis
-        uses: SonarSource/unified-dogfooding-actions/run-iris@v1
+        uses: SonarSource/unified-dogfooding-actions/run-iris@b256ed29572b02741155dad9e6f20735076080e4 # v1
         with:
           primary_project_key: "org.sonarsource.sonarlint.vscode:sonarlint-vscode"
           primary_platform: "Next"
