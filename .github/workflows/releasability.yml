@@ -18,7 +18,12 @@ jobs:
       statuses: write
       contents: read
     steps:
-      - uses: SonarSource/gh-action_releasability/releasability-status@v3
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+        with:
+          egress-policy: audit
+
+      - uses: SonarSource/gh-action_releasability/releasability-status@c27a275cc9867c8cdfff8ffafcea50957a63503e # v3
         with:
           optional_checks: "Jira,CheckDependencies"
         env:
